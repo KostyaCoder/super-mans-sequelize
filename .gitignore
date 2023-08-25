@@ -3,4 +3,5 @@ node_modules/
 sequelize*json
 
 !.gitignore
+!.gitkeep
 !.*rc
