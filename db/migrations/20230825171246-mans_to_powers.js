@@ -1,14 +1,9 @@
 "use strict";
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("images", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
+    await queryInterface.createTable("mans_to_powers", {
       manId: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -19,24 +14,34 @@ module.exports = {
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
+        primaryKey: true
       },
-      path: {
-        type: Sequelize.STRING,
+      powerId: {
         allowNull: false,
+        type: Sequelize.INTEGER,
+        field: "power_id",
+        references: {
+          model: "superpowers",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        primaryKey: true,
       },
       createdAt: {
         allowNull: false,
-        field: "created_at",
         type: Sequelize.DATE,
+        field: "created_at",
       },
       updatedAt: {
         allowNull: false,
-        field: "updated_at",
         type: Sequelize.DATE,
+        field: "updated_at",
       },
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("images");
+    await queryInterface.dropTable("mans_to_powers");
   },
 };
