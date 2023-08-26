@@ -5,6 +5,7 @@ module.exports.createSuperman = async (req, resp, next) => {
 
   try {
     const {
+      file,
       body,
       body: { powers },
     } = req;
@@ -12,14 +13,24 @@ module.exports.createSuperman = async (req, resp, next) => {
     const man = await Superman.create(body, { transaction: t });
     man.dataValues.powers = [];
 
-    for (const powerName of powers) {
-      const [power] = await Superpowers.findOrCreate({
-        where: { name: powerName },
-        transaction: t,
-      });
+    if (powers) {
+      for (const powerName of powers) {
+        const [power] = await Superpowers.findOrCreate({
+          where: { name: powerName },
+          transaction: t,
+        });
 
-      await man.addSuperpowers(power, { transaction: t });
-      man.dataValues.powers.push(power.name);
+        await man.addSuperpowers(power, { transaction: t });
+        man.dataValues.powers.push(power.name);
+      }
+    }
+
+    if (file) {
+      const image = await man.createImage(
+        { path: file.filename },
+        { transaction: t }
+      );
+      man.dataValues.image = image;
     }
 
     await t.commit();
