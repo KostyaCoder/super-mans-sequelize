@@ -1,5 +1,5 @@
 const createHttpError = require("http-errors");
-const { Superman, Superpowers } = require("../db/models");
+const { Superman, Superpowers, Images } = require("../db/models");
 
 module.exports.findMan = async (req, resp, next) => {
   try {
@@ -8,7 +8,10 @@ module.exports.findMan = async (req, resp, next) => {
     } = req;
 
     const superman = await Superman.findByPk(manId, {
-      include: { model: Superpowers, through: { attributes: [] } },
+      include: [
+        { model: Superpowers, through: { attributes: [] } },
+        { model: Images },
+      ],
     });
 
     if (!superman) {

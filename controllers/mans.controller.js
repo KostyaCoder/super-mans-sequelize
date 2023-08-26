@@ -1,4 +1,4 @@
-const { Superman, Superpowers, sequelize } = require("../db/models");
+const { Superman, Superpowers, Images, sequelize } = require("../db/models");
 
 module.exports.createSuperman = async (req, resp, next) => {
   const t = await sequelize.transaction();
@@ -34,7 +34,10 @@ module.exports.createSuperman = async (req, resp, next) => {
 module.exports.getSupermans = async (req, resp, next) => {
   try {
     const supermans = await Superman.findAll({
-      include: { model: Superpowers, through: { attributes: [] } },
+      include: [
+        { model: Superpowers, through: { attributes: [] } },
+        { model: Images },
+      ],
     });
     resp.status(200).send({ data: supermans });
   } catch (error) {
