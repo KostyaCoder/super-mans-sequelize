@@ -12,10 +12,11 @@ module.exports.createSuperman = async (req, resp, next) => {
 
     const man = await Superman.create(body, { transaction: t });
     for (const powerName of powers) {
-      const power = await Superpowers.create(
-        { name: powerName },
-        { transaction: t }
-      );
+      const [power] = await Superpowers.findOrCreate({
+        where: { name: powerName },
+        transaction: t,
+      });
+
       await man.addSuperpowers(power, { transaction: t });
     }
 
