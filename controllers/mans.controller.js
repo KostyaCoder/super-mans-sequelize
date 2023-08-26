@@ -11,6 +11,8 @@ module.exports.createSuperman = async (req, resp, next) => {
     } = req;
 
     const man = await Superman.create(body, { transaction: t });
+    man.dataValues.powers = [];
+
     for (const powerName of powers) {
       const [power] = await Superpowers.findOrCreate({
         where: { name: powerName },
@@ -18,6 +20,7 @@ module.exports.createSuperman = async (req, resp, next) => {
       });
 
       await man.addSuperpowers(power, { transaction: t });
+      man.dataValues.powers.push(power.name);
     }
 
     await t.commit();
