@@ -1,6 +1,7 @@
 .*
 node_modules/
 sequelize*json
+public/
 
 !.gitignore
 !.gitkeep
