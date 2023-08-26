@@ -31,3 +31,14 @@ module.exports.createSuperman = async (req, resp, next) => {
     next(error);
   }
 };
+
+module.exports.getSupermans = async (req, resp, next) => {
+  try {
+    const supermans = await Superman.findAll({
+      include: { model: Superpowers, through: { attributes: [] } },
+    });
+    resp.status(200).send({ data: supermans });
+  } catch (error) {
+    next(error);
+  }
+};
