@@ -45,17 +45,7 @@ module.exports.getSupermans = async (req, resp, next) => {
 
 module.exports.getSuperman = async (req, resp, next) => {
   try {
-    const {
-      params: { manId },
-    } = req;
-
-    const superman = await Superman.findByPk(manId, {
-      include: { model: Superpowers, through: { attributes: [] } },
-    });
-
-    if (!superman) {
-      return next(createHttpError(404, "Superman not found"));
-    }
+    const { man } = req;
 
     resp.status(200).send({ data: superman });
   } catch (error) {
