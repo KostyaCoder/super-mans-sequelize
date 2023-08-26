@@ -47,7 +47,7 @@ module.exports.getSuperman = async (req, resp, next) => {
   try {
     const { man } = req;
 
-    resp.status(200).send({ data: superman });
+    resp.status(200).send({ data: man });
   } catch (error) {
     next(error);
   }
