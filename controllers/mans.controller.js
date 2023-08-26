@@ -62,3 +62,22 @@ module.exports.getSuperman = async (req, resp, next) => {
     next(error);
   }
 };
+
+module.exports.updateSuperman = async (req, resp, next) => {
+  try {
+    const {
+      body,
+      man: { id },
+    } = req;
+
+    const [countRows, [superman]] = await Superman.update(body, {
+      where: { id },
+      returning: true,
+      include: { model: Superpowers, through: { attributes: [] } },
+    });
+
+    resp.status(200).send({ data: superman });
+  } catch (error) {
+    next(error);
+  }
+};
