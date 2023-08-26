@@ -70,3 +70,15 @@ module.exports.updateSuperman = async (req, resp, next) => {
     next(error);
   }
 };
+
+module.exports.deleteSuperman = async (req, resp, next) => {
+  try {
+    const { man } = req;
+
+    man.destroy();
+
+    resp.status(200).send({ data: man });
+  } catch (error) {
+    next(error);
+  }
+};
