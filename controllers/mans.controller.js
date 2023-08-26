@@ -1,4 +1,4 @@
-// const createHttpError = require("http-errors");
+const createHttpError = require("http-errors");
 const { Superman, Superpowers, sequelize } = require("../db/models");
 
 module.exports.createSuperman = async (req, resp, next) => {
