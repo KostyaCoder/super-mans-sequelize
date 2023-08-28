@@ -1,3 +1,4 @@
+const createHttpError = require("http-errors");
 const { sequelize, Superpowers } = require("../db/models");
 
 module.exports.createSuperpower = async (req, resp, next) => {
@@ -28,6 +29,10 @@ module.exports.updateSuperpower = async (req, resp, next) => {
       where: { id: powerId },
       returning: true,
     });
+
+    if (countRows === 0) {
+      return next(createHttpError(404, "Power not found"));
+    }
 
     resp.status(200).send({ data: superpower });
   } catch (error) {
