@@ -34,3 +34,25 @@ module.exports.updateSuperpower = async (req, resp, next) => {
     next(error);
   }
 };
+
+module.exports.deletePower = async (req, resp, next) => {
+  try {
+    const {
+      params: { powerId },
+    } = req;
+
+    const power = await Superpowers.findOne({
+      where: { id: powerId },
+    });
+
+    if (!power) {
+      return next(createHttpError(404, "Power not found"));
+    }
+
+    power.destroy();
+
+    resp.status(200).send({ data: power });
+  } catch (error) {
+    next(error);
+  }
+};
