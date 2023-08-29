@@ -68,15 +68,9 @@ module.exports.getSuperman = async (req, resp, next) => {
 
 module.exports.updateSuperman = async (req, resp, next) => {
   try {
-    const {
-      body,
-      man: { id },
-    } = req;
+    const { body, man } = req;
 
-    const [countRows, [superman]] = await Superman.update(body, {
-      where: { id },
-      returning: true,
-    });
+    const superman = await man.update(body);
 
     resp.status(200).send({ data: superman });
   } catch (error) {
