@@ -27,19 +27,14 @@ module.exports = {
       {}
     );
 
-    for (const power of powers) {
-      await queryInterface.bulkInsert(
-        "superpowers",
-        [
-          {
-            name: power,
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-        ],
-        {}
-      );
-    }
+    const powersInsert = powers.map((x) => {
+      return {
+        name: x,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    });
+    await queryInterface.bulkInsert("superpowers", powersInsert);
 
     const man = await Superman.findAll();
     const powerBd = await Superpowers.findAll();
@@ -48,24 +43,19 @@ module.exports = {
       dataValues: { id: manId },
     } = man[0];
 
-    for (const elem of powerBd) {
+    const mans_to_powers = powerBd.map((x) => {
       const {
         dataValues: { id: powerId },
-      } = elem;
+      } = x;
 
-      await queryInterface.bulkInsert(
-        "mans_to_powers",
-        [
-          {
-            man_id: manId,
-            power_id: powerId,
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-        ],
-        {}
-      );
-    }
+      return {
+        man_id: manId,
+        power_id: powerId,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    });
+    await queryInterface.bulkInsert("mans_to_powers", mans_to_powers);
   },
 
   async down(queryInterface, Sequelize) {
