@@ -1,4 +1,6 @@
+const { Op } = require("sequelize");
 const { Superman, Superpowers, Images, sequelize } = require("../db/models");
+const createHttpError = require("http-errors");
 
 module.exports.createSuperman = async (req, resp, next) => {
   const t = await sequelize.transaction();
@@ -6,36 +8,55 @@ module.exports.createSuperman = async (req, resp, next) => {
   try {
     const {
       file,
-      body,
-      body: { powers },
+      body: { powers, ...body },
     } = req;
 
-    const man = await Superman.create(body, { transaction: t });
-    man.dataValues.powers = [];
-
-    if (powers) {
-      for (const powerName of powers) {
-        const [power] = await Superpowers.findOrCreate({
-          where: { name: powerName },
-          transaction: t,
-        });
-
-        await man.addSuperpowers(power, { transaction: t });
-        man.dataValues.powers.push(power.name);
-      }
+    if (!powers || powers.length === 0) {
+      return next(createHttpError(400, "Power must be"));
     }
 
+    //1
+    const powersBdObj = await Superpowers.findAll({
+      where: { name: { [Op.in]: powers } },
+    });
+    const powersBd = powersBdObj.map((x) => x.name);
+
+    //2
+    const powersForCreate = powers.filter((x) => !powersBd.includes(x));
+
+    //3
+    const newImage = [];
     if (file) {
-      const image = await man.createImage(
-        { path: file.filename },
-        { transaction: t }
-      );
-      man.dataValues.image = image;
+      newImage.push({ path: file.filename });
     }
 
+    const man = await Superman.create(
+      {
+        ...body,
+        Superpowers: powersForCreate.map((x) => {
+          return {
+            name: x,
+          };
+        }),
+        Images: newImage,
+      },
+      {
+        include: [Superpowers, Images],
+        transaction: t,
+      }
+    );
+
+    await man.addSuperpowers(powersBdObj, { transaction: t });
     await t.commit();
 
-    resp.status(201).send({ data: man });
+    const returnValue = await Superman.findByPk(man.dataValues.id, {
+      include: [
+        { model: Superpowers, through: { attributes: [] } },
+        { model: Images },
+      ],
+    });
+
+    resp.status(201).send({ data: returnValue });
   } catch (error) {
     await t.rollback();
     next(error);
